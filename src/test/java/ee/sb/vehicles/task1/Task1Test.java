@@ -26,7 +26,7 @@ class Task1Test {
     Task1 task1 = new Task1(OUTPUT_FILE);
     task1.generateYearlyPayment(SOURCE_FILE);
     String output = readFile(OUTPUT_FILE);
-    assertTrue(output.contains("100,3822.52,318.54")); // improve it
+    assertTrue(output.contains("100,3822.52,318.54"));
   }
 
   private String readFile(String filePath) {
