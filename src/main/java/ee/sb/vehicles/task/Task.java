@@ -39,11 +39,11 @@ public class Task {
 
   private void readRecords(String sourceCsv) {
     Consumer<CSVRecord> csvRecordConsumer =  csvRecord -> {
-      Optional<Vehicle> vehicle = csvRecordToVehicle(csvRecord);
-      if (vehicle.isPresent()) {
-        BigDecimal yearlyFee = calculateCascoPayment(vehicle.get());
-        writeResults(yearlyFee, vehicle.get());
-      }
+      Optional<Vehicle> vehicleOptional = csvRecordToVehicle(csvRecord);
+      vehicleOptional.ifPresent( vehicle -> {
+        BigDecimal yearlyFee = calculateCascoPayment(vehicle);
+        writeResults(yearlyFee, vehicle);
+      });
     };
     CSVReader.readCsv(csvRecordConsumer, sourceCsv);
   }
