@@ -1,5 +1,7 @@
-package ee.sb.vehicles.task1;
+package ee.sb.vehicles.task;
 
+import ee.sb.vehicles.model.CoeffficientFactor;
+import ee.sb.vehicles.model.FeeCalculator;
 import ee.sb.vehicles.model.Vehicle;
 import ee.sb.vehicles.model.VehiclesCoefficients;
 import org.apache.commons.csv.CSVRecord;
@@ -10,17 +12,19 @@ import ee.sb.vehicles.writer.CSVWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import static ee.sb.vehicles.readers.CSVReader.Headers;
 
-public class Task1 {
+public class Task {
 
+  private FeeCalculator feeCalculator = new FeeCalculator();
   private VehiclesCoefficients vehiclesCoefficients;
   private CSVWriter csvWriter;
 
-  Task1(String outputFile) {
+  Task(String outputFile) {
     this.vehiclesCoefficients = VehicleCoefficientsReader.getVehiclesCoefficients().orElseThrow(() -> {
       throw new RuntimeException("Unable to load the vehicles coefficients");
     });
@@ -54,19 +58,24 @@ public class Task1 {
   }
 
   private BigDecimal calculateCascoPayment(Vehicle vehicle ) {
-    Integer currentAge = calculateVehicleAge(vehicle);
-    BigDecimal vehicleRisk = calculateVehicleRisk(vehicle);
-    Long price = vehicle.getPurchasePrice();
-    return calculateWithFormula(currentAge, vehicleRisk, price);
+    CoeffficientFactor ageCoefficient = new CoeffficientFactor(vehiclesCoefficients.getVehicleAgeCoefficient(),
+      BigDecimal.valueOf(calculateVehicleAge(vehicle)));
+    CoeffficientFactor valueCoefficient = new CoeffficientFactor(vehiclesCoefficients.getVehicleValueCoefficient(),
+      BigDecimal.valueOf(vehicle.getPurchasePrice()));
+    CoeffficientFactor indemnityCoefficient = new CoeffficientFactor(vehiclesCoefficients.getVehiclePreviousIndemnityCoefficient(),
+      vehicle.getPreviousIndemnity());
+    BigDecimal vehicleRisk = getRiskCoefficient(vehicle);
+    feeCalculator.addListOfFactors(List.of(ageCoefficient, valueCoefficient, indemnityCoefficient));
+    BigDecimal result = calculateWithFormula(vehicleRisk);
+    feeCalculator.clearList();
+    return result;
   }
 
-  private BigDecimal calculateWithFormula(Integer currentAge, BigDecimal vehicleRisk, Long price) {
-    return vehicleRisk.multiply(
-      vehiclesCoefficients.getVehicleAgeCoefficient().multiply(BigDecimal.valueOf(currentAge)).add(
-        vehiclesCoefficients.getVehicleValueCoefficient().multiply(BigDecimal.valueOf(price)) ) );
+  private BigDecimal calculateWithFormula(BigDecimal vehicleRisk) {
+    return vehicleRisk.multiply(feeCalculator.getTotalAnnualFee());
   }
 
-  private BigDecimal calculateVehicleRisk(Vehicle vehicle) {
+  private BigDecimal getRiskCoefficient(Vehicle vehicle) {
     Optional<String> makeCoefficient = Optional.ofNullable(vehiclesCoefficients.getMakeCoefficients().get(
       vehicle.getProducer()));
     return makeCoefficient.map(BigDecimal::new).orElseGet(() -> new BigDecimal("1.00"));
@@ -97,7 +106,7 @@ public class Task1 {
   public static void main(String[] args) {
     final String SOURCE_FILE = "src/main/resources/vehicles.csv";
     final String OUTPUT_FILE = "src/main/resources/CascoPayment.csv";
-    Task1 task1 = new Task1(OUTPUT_FILE);
-    task1.generateYearlyPayment(SOURCE_FILE);
+    Task task = new Task(OUTPUT_FILE);
+    task.generateYearlyPayment(SOURCE_FILE);
   }
 }

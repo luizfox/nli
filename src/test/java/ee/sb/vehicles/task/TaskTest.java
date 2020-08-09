@@ -1,4 +1,4 @@
-package ee.sb.vehicles.task1;
+package ee.sb.vehicles.task;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Task1Test {
+class TaskTest {
 
   @BeforeEach
   void setUp() {
@@ -23,10 +23,10 @@ class Task1Test {
   void generateYearlyPayment() {
     final String OUTPUT_FILE = "src/test/resources/outputTest.csv";
     final String SOURCE_FILE = "src/test/resources/vehiclesTest.csv";
-    Task1 task1 = new Task1(OUTPUT_FILE);
-    task1.generateYearlyPayment(SOURCE_FILE);
+    Task task = new Task(OUTPUT_FILE);
+    task.generateYearlyPayment(SOURCE_FILE);
     String output = readFile(OUTPUT_FILE);
-    assertTrue(output.contains("100,3822.52,318.54"));
+    assertTrue(output.contains("100,4846.67,403.89"));
   }
 
   private String readFile(String filePath) {
