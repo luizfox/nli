@@ -1,32 +1,34 @@
 package ee.sb.vehicles.model;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class FeeCalculator {
-  private ArrayList<CoeffficientFactor> listOfFactors = new ArrayList<>();
 
-  public void addFactor(CoeffficientFactor coeffficientFactor) {
-    listOfFactors.add(coeffficientFactor);
+  public ResultOfCalculation getResultOfCalculation(List<CoeffficientFactor> factors) {
+    List<CoeffficientFactor.Label> coefficientNames = new ArrayList<>();
+    factors.forEach( coeffficientFactor -> coefficientNames.add(coeffficientFactor.getName()));
+    BigDecimal totalAnnualFee = getTotalAnnualFee(factors);
+    return ResultOfCalculation.builder()
+      .usedCoefficients(coefficientNames)
+      .monthlyFee(getTotalMonthlyFee(totalAnnualFee))
+      .yearlyFee(totalAnnualFee)
+      .build();
   }
 
-  public void addListOfFactors(List<CoeffficientFactor> listToAdd) {
-    listOfFactors.addAll(listToAdd);
-  }
-
-  public BigDecimal getTotalAnnualFee() {
+  private BigDecimal getTotalAnnualFee(List<CoeffficientFactor> listOfFactors) {
     return listOfFactors.stream()
       .map(CoeffficientFactor::getFactorValue)
       .reduce(BigDecimal::add)
       .get();
   }
 
-  public BigDecimal getTotalMontlyFee() {
-    return this.getTotalAnnualFee().divide(BigDecimal.valueOf(12));
-  }
-
-  public void clearList() {
-    listOfFactors.clear();
+  private BigDecimal getTotalMonthlyFee(BigDecimal totalAnnualFee) {
+    return totalAnnualFee.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
   }
 }

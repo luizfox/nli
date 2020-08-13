@@ -1,4 +1,4 @@
-package ee.sb.vehicles.readers;
+package ee.sb.vehicles.csv;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

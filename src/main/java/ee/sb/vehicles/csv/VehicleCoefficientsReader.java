@@ -1,4 +1,4 @@
-package ee.sb.vehicles.readers;
+package ee.sb.vehicles.csv;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;

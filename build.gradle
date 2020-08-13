@@ -12,10 +12,17 @@ repositories {
 }
 
 dependencies {
+    compile ("org.springframework.boot:spring-boot-starter-parent:2.3.2.RELEASE")
+    compile ("org.springframework.boot:spring-boot-starter-data-rest:2.3.2.RELEASE")
     compile ("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     compile ('org.apache.commons:commons-csv:1.5')
+    compile ('org.springframework.boot:spring-boot-starter-data-jpa:2.1.6.RELEASE')
+    compile ("com.h2database:h2:1.4.194")
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile('org.mockito:mockito-junit-jupiter:2.18.3')
+    testCompile "org.springframework.boot:spring-boot-starter-test:2.3.1.RELEASE"
 
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'

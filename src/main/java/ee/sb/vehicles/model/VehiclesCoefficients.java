@@ -2,13 +2,13 @@ package ee.sb.vehicles.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
 @Data
-@NoArgsConstructor
+@Component
 public class VehiclesCoefficients {
   @JsonProperty("coefficients") Map<String, BigDecimal> coefficients;
   @JsonProperty("make_coefficients") Map<String, String> makeCoefficients;
